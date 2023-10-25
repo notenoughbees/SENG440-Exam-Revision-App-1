@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -32,6 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import nz.ac.uclive.dsi61.examappexample.ui.theme.ExamAppExampleTheme
+import nz.ac.uclive.dsi61.examappexample.ui.theme.Green
+import nz.ac.uclive.dsi61.examappexample.ui.theme.OffWhite
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -47,8 +52,8 @@ class MainActivity : ComponentActivity() {
                         TopAppBar(
                             title = { Text(text = "Sort of Game") },
                             colors = TopAppBarDefaults.largeTopAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                titleContentColor = MaterialTheme.colorScheme.primary
+                                containerColor = Green, // my colour from Color.kt
+                                titleContentColor = Color.White // pre-defined colour
                             )
                         )
                     },
@@ -95,13 +100,14 @@ class MainActivity : ComponentActivity() {
                                 var selectedValue by rememberSaveable{mutableStateOf((sharedPreferences.getString(preferenceKey, "<default value>") ?: "<default value>"))}   //saveable: persist config changes. TODO SHEET: remember mutableStateOf(
 
                                 TextField(
+                                    modifier = modifier,
                                     value = selectedValue,
                                     onValueChange = { newValue ->
                                         selectedValue = newValue
                                         sharedPreferences.edit().putString(preferenceKey, newValue).apply()
                                     },
                                     label = { Text(text = label) },
-                                    modifier = modifier
+                                    colors = TextFieldDefaults.textFieldColors(containerColor = OffWhite)
                                 ) //TODO SHEET: no {} here
                             }
 
