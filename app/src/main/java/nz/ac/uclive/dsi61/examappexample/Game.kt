@@ -48,6 +48,37 @@ fun GameScreen(context: Context, navController: NavController) {
         MyList(splitItems, {})
 
 
+
+
+        // separate box for the From & To text, which is aligned to the top & bottom
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+//                .align(Alignment.Top)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+//                    .align(Alignment.Top)
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = getSharedPref(context, "from")
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = getSharedPref(context, "to")
+                )
+            }
+        }
     }
 }
 
