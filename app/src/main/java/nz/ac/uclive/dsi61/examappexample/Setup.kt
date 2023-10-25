@@ -16,8 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import nz.ac.uclive.dsi61.examappexample.screens.Screens
-import nz.ac.uclive.dsi61.examappexample.ui.theme.Green
 import nz.ac.uclive.dsi61.examappexample.ui.theme.LightGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,13 +39,7 @@ fun SetupScreen(context: Context, navController: NavController) {
 
     Scaffold( //TODO SHEET: is red until do @OptIn & @Suppress
         topBar = {
-            TopAppBar(
-                title = { Text(text = "Sort of Game") },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = Green, // my colour from Color.kt
-                    titleContentColor = Color.White // pre-defined colour
-                )
-            )
+            MyTopAppBar()
         },
         bottomBar = {
             BottomAppBar(
@@ -92,7 +83,7 @@ fun SetupScreen(context: Context, navController: NavController) {
         ) {
             Column(
                 modifier = Modifier
-                    .padding(innerPadding) // put textfield below topappbar rather than behind
+                    .padding(innerPadding) // put textfields below topappbar rather than behind
             ) {
                 @Composable
                 fun MyTextField(label: String, selectedValue: String, modifier: Modifier = Modifier,

@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,8 +29,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import nz.ac.uclive.dsi61.examappexample.screens.Screens
 import nz.ac.uclive.dsi61.examappexample.ui.theme.Grey
 import nz.ac.uclive.dsi61.examappexample.ui.theme.VeryLightGrey
 
@@ -38,45 +42,72 @@ import nz.ac.uclive.dsi61.examappexample.ui.theme.VeryLightGrey
 fun GameScreen(context: Context, navController: NavController) {
     //TODO: add topappbar & make a fn for it
     Scaffold(
-    ) {
+        topBar = {
+            MyTopAppBar()
+        },
+        bottomBar = {
+            BottomAppBar(
+                containerColor = Color.Transparent, // remove default bg colour
+                contentPadding = PaddingValues(16.dp), // make btns align w/ the components in the scaffold's main content
+                content = {
+                    Row( // must be in row in order to use horizontal arrangement
+                        Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End // push btn to right edge
+                    ) {
+                        Button(
+                            onClick = {
+                                navController.navigate(Screens.Setup.route) //TODO
+                            }
+                        ) {
+                            Text(text = "CHECK")
+                        }
+                    }
+                }
+            )
+        }
+    ) { innerPadding -> // will use later so we can push content below the topappbar & above the bottomappbar
         val items = getSharedPref(context, "items")
 //        Log.d("FOO", items)
         val splitItems = items.split("\n")
         //TODO: randomise order
         Log.d("FOO", splitItems.toString())
 
-        MyList(splitItems, {})
-
-
-
-
-        // separate box for the From & To text, which is aligned to the top & bottom
-        Box(
+        Box( // wrap our lazycolumn & box inside another box so can put padding around everything
             modifier = Modifier
-                .fillMaxSize()
-//                .align(Alignment.Top)
+                .padding(innerPadding) //TODO SHEET: push this content below & above the top & bottom app bars!!!!!!
+                .padding(16.dp) // then do 16dp around the content as well
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-//                    .align(Alignment.Top)
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = getSharedPref(context, "from")
-                )
-            }
+            MyList(splitItems, {})
 
-            Column(
+
+
+            // separate box for the From & To text, which is aligned to the top & bottom
+            Box(
                 modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
             ) {
-                Text(
-                    text = getSharedPref(context, "to")
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = getSharedPref(context, "from")
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = getSharedPref(context, "to")
+                    )
+                }
             }
         }
     }
@@ -95,8 +126,8 @@ fun MyList(words: List<String>, onItemClick: (String) -> Unit) {
             ) {
                 Text(
                     modifier = Modifier
-                        .padding(all = 48.dp)
-                        .clickable { onItemClick(word) },
+                        .padding(all = 48.dp),
+//                        .clickable { onItemClick(word) },     // TODO SHEET: makes text clickable
                     text = word,
                 )
 
