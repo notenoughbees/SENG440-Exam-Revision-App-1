@@ -101,12 +101,13 @@ class MainActivity : ComponentActivity() {
 
                                 TextField(
                                     modifier = modifier,
+                                    label = { Text(text = label) },
+                                    placeholder = { Text(text = "Enter items in sorted order, one item per line.")} ,
                                     value = selectedValue,
                                     onValueChange = { newValue ->
                                         selectedValue = newValue
                                         sharedPreferences.edit().putString(preferenceKey, newValue).apply()
                                     },
-                                    label = { Text(text = label) },
                                     colors = TextFieldDefaults.textFieldColors(containerColor = OffWhite)
                                 ) //TODO SHEET: no {} here
                             }
