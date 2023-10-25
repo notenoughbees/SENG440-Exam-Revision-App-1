@@ -66,20 +66,18 @@ fun GameScreen(context: Context, navController: NavController) {
                 }
             )
         }
-    ) { innerPadding -> // will use later so we can push content below the topappbar & above the bottomappbar
+    ) { innerPadding -> // will use later so we can push content below the topappbar & above the bottomappbar...
         val items = getSharedPref(context, "items")
 //        Log.d("FOO", items)
         val splitItems = items.split("\n")
         //TODO: randomise order
         Log.d("FOO", splitItems.toString())
 
-        Box( // wrap our lazycolumn & box inside another box so can put padding around everything
+        Box( // wrap our lazycolumn & box inside another box so can put padding around everything...
             modifier = Modifier
                 .padding(innerPadding) //TODO SHEET: push this content below & above the top & bottom app bars!!!!!!
-                .padding(16.dp) // then do 16dp around the content as well
         ) {
             MyList(splitItems, {})
-
 
 
             // separate box for the From & To text, which is aligned to the top & bottom
@@ -117,6 +115,8 @@ fun GameScreen(context: Context, navController: NavController) {
 @Composable
 fun MyList(words: List<String>, onItemClick: (String) -> Unit) {
     LazyColumn ( // LazyColumn is Compose equivalent of RecyclerView
+        modifier = Modifier
+            .padding(16.dp) // ...then do 16dp around the content as well (but not for the top&bottom text)
     ) { // Only renders the visible elements passed to the items function.
         items(words) { word -> // import ext fn
             // Styling for an individual item in the list
@@ -125,18 +125,18 @@ fun MyList(words: List<String>, onItemClick: (String) -> Unit) {
                 .background(VeryLightGrey)
             ) {
                 Text(
-                    modifier = Modifier
-                        .padding(all = 48.dp),
+                    modifier = Modifier,
+//                        .padding(all = 48.dp),
 //                        .clickable { onItemClick(word) },     // TODO SHEET: makes text clickable
                     text = word,
                 )
 
-                Spacer( // push btns to the right side of the screen
+                Spacer( // push btns to right side of screen
                     modifier = Modifier.weight(1f)
                 )
 
-                Column( // !!!!!!!! "put these 2 btns in a col together" !!!!!!!!
-                    horizontalAlignment = Alignment.End
+                Row( // !!!!!!!! "put these 2 btns in a col together" !!!!!!!!
+                    horizontalArrangement = Arrangement.End
                 ) {
                     IconButton(
                         onClick = {},
