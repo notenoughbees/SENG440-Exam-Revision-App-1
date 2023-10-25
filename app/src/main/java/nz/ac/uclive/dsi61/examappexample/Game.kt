@@ -74,8 +74,6 @@ fun GameScreen(context: Context, navController: NavController) {
         val splitItems = items.split("\n")
 //        Log.d("FOO", splitItems.toString())
 
-        //TODO: randomise order
-
 //        val mutableSplitItems = splitItems.toMutableList()
 //        val rememberedMutableSplitItems = remember { // my attempt: doesnt work bc no fancy gpt syntax
 //            mutableStateListOf(splitItems) }
@@ -85,7 +83,8 @@ fun GameScreen(context: Context, navController: NavController) {
         //  To do this, use remember fn & mutableStateListOf():
         //  remember the items so that when they change, we recompose & update the UI!
         val rememberedMutableSplitItems = remember {
-            mutableStateListOf(*splitItems.toTypedArray()) } //TODO SHEET: understand what this syntax does: * & toTypedArray()
+            val splitItemsShuffled = splitItems.shuffled() // randomise the order on initialisation only (don't randomise multiple times)
+            mutableStateListOf(*splitItemsShuffled.toTypedArray()) } //TODO SHEET: understand what this syntax does: * & toTypedArray()
 
 
 
