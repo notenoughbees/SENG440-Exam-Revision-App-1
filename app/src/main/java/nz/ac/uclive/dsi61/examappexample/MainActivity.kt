@@ -2,10 +2,10 @@ package nz.ac.uclive.dsi61.examappexample
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,11 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -45,8 +43,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
         setContent {
             ExamAppExampleTheme(content = {
+                // variables to hold the content of the textfields
+                var fromText by rememberSaveable { mutableStateOf(getSharedPref(sharedPreferences, "from")) }
+                var toText by rememberSaveable { mutableStateOf(getSharedPref(sharedPreferences, "to")) }
+                var itemsText by rememberSaveable { mutableStateOf(getSharedPref(sharedPreferences, "items")) }
+
                 Scaffold(
                     topBar = {
                         TopAppBar(
@@ -69,7 +73,14 @@ class MainActivity : ComponentActivity() {
                                 ) {
                                     Button(
                                         onClick = {
-
+                                            // clear the text fields directly
+                                            fromText = ""
+                                            toText = ""
+                                            itemsText = ""
+                                            // clear the shared preferences
+                                            setSharedPref(sharedPreferences, "from", "")
+                                            setSharedPref(sharedPreferences, "to", "")
+                                            setSharedPref(sharedPreferences, "items", "")
                                         }
                                     ) {
                                         Text(text = "CLEAR")
@@ -95,31 +106,45 @@ class MainActivity : ComponentActivity() {
                                 .padding(innerPadding) // put textfield below topappbar rather than behind
                         ) {
                             @Composable
-                            fun MyTextField(label: String, preferenceKey: String, modifier: Modifier = Modifier) {
-                                //TODO: make fn to save/retrieve
-                                var selectedValue by rememberSaveable{mutableStateOf((sharedPreferences.getString(preferenceKey, "<default value>") ?: "<default value>"))}   //saveable: persist config changes. TODO SHEET: remember mutableStateOf(
-
+                            fun MyTextField(label: String, selectedValue: String, modifier: Modifier = Modifier,
+                                            onValueChange: (String) -> Unit) {
                                 TextField(
                                     modifier = modifier,
                                     label = { Text(text = label) },
-                                    placeholder = { Text(text = "Enter items in sorted order, one item per line.")} ,
-                                    value = selectedValue,
-                                    onValueChange = { newValue ->
-                                        selectedValue = newValue
-                                        sharedPreferences.edit().putString(preferenceKey, newValue).apply()
-                                    },
+                                    placeholder = { Text(text = "Enter items in sorted order, one item per line.")}, //TODO: only have this for the multiline textbox
+                                    value = selectedValue, // (if selVal was mutState, would do .value)
+                                    onValueChange = onValueChange, // use the given lambda function
                                     colors = TextFieldDefaults.textFieldColors(containerColor = OffWhite)
                                 ) //TODO SHEET: no {} here
                             }
 
-                            MyTextField("From", "from", Modifier.align(Alignment.End))
-                            MyTextField("To", "to", Modifier.align(Alignment.End))
-                            MyTextField("", "items", Modifier.fillMaxSize()) // multiline textbox gets diff modifier
-
+                            MyTextField("From", fromText, Modifier.align(Alignment.End)) { newValue ->
+                                // pass a lambda: solves issue where, if we had had this in the func,
+                                // would get error on the assignment line below bc TextField expects
+                                // fromText to be var but it gets declared as val.
+                                fromText = newValue
+                                setSharedPref(sharedPreferences, "from", newValue)
+                            }
+                            MyTextField("To", toText, Modifier.align(Alignment.End)) { newValue ->
+                                toText = newValue
+                                setSharedPref(sharedPreferences, "to", newValue)
+                            }
+                            MyTextField("", itemsText, Modifier.fillMaxSize()) { newValue ->
+                                itemsText = newValue
+                                setSharedPref(sharedPreferences, "items", newValue)
+                            } // multiline textbox gets diff modifier
                         }
                     }
                 }
             })
         }
     }
+}
+
+fun getSharedPref(sharedPreferences: SharedPreferences, preferenceKey: String): String {
+    return (sharedPreferences.getString(preferenceKey, "<default value>") ?: "<default value>")
+}
+
+fun setSharedPref(sharedPreferences: SharedPreferences, preferenceKey: String, newValue: String) {
+    sharedPreferences.edit().putString(preferenceKey, newValue).apply()
 }
