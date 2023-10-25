@@ -108,10 +108,13 @@ class MainActivity : ComponentActivity() {
                             @Composable
                             fun MyTextField(label: String, selectedValue: String, modifier: Modifier = Modifier,
                                             onValueChange: (String) -> Unit) {
+                                val placeholderText = if(label == "") {
+                                    "Enter items in sorted order, one item per line." } else { "" }
+
                                 TextField(
                                     modifier = modifier,
-                                    label = { Text(text = label) },
-                                    placeholder = { Text(text = "Enter items in sorted order, one item per line.")}, //TODO: only have this for the multiline textbox
+                                    label = { Text(text = label) }, //TODO SHEET: remember {}s if put a composable
+                                    placeholder = { Text(text = placeholderText) },
                                     value = selectedValue, // (if selVal was mutState, would do .value)
                                     onValueChange = onValueChange, // use the given lambda function
                                     colors = TextFieldDefaults.textFieldColors(containerColor = OffWhite)
