@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -27,6 +27,8 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -70,14 +72,28 @@ fun GameScreen(context: Context, navController: NavController) {
         val items = getSharedPref(context, "items")
 //        Log.d("FOO", items)
         val splitItems = items.split("\n")
+//        Log.d("FOO", splitItems.toString())
+
         //TODO: randomise order
-        Log.d("FOO", splitItems.toString())
+
+//        val mutableSplitItems = splitItems.toMutableList()
+//        val rememberedMutableSplitItems = remember { // my attempt: doesnt work bc no fancy gpt syntax
+//            mutableStateListOf(splitItems) }
+
+        // TODO SHEET: !!!!!!!!!!!! How to update UI after click the btns and set the values?
+        //  Must make MyList composable get recomposed when data changes.
+        //  To do this, use remember fn & mutableStateListOf():
+        //  remember the items so that when they change, we recompose & update the UI!
+        val rememberedMutableSplitItems = remember {
+            mutableStateListOf(*splitItems.toTypedArray()) } //TODO SHEET: understand what this syntax does: * & toTypedArray()
+
+
 
         Box( // wrap our lazycolumn & box inside another box so can put padding around everything...
             modifier = Modifier
                 .padding(innerPadding) //TODO SHEET: push this content below & above the top & bottom app bars!!!!!!
         ) {
-            MyList(splitItems, {})
+            MyList(rememberedMutableSplitItems, {})
 
 
             // separate box for the From & To text, which is aligned to the top & bottom
@@ -113,12 +129,12 @@ fun GameScreen(context: Context, navController: NavController) {
 
 
 @Composable
-fun MyList(words: List<String>, onItemClick: (String) -> Unit) {
-    LazyColumn ( // LazyColumn is Compose equivalent of RecyclerView
+fun MyList(words: MutableList<String>, onItemClick: (String) -> Unit) {
+    LazyColumn ( // LazyColumn: Compose equivalent of RecyclerView
         modifier = Modifier
             .padding(16.dp) // ...then do 16dp around the content as well (but not for the top&bottom text)
     ) { // Only renders the visible elements passed to the items function.
-        items(words) { word -> // import ext fn
+        itemsIndexed(words) { index, word -> // items() or itemsIndexed() if need index
             // Styling for an individual item in the list
             Row(
                 modifier = Modifier
@@ -127,7 +143,7 @@ fun MyList(words: List<String>, onItemClick: (String) -> Unit) {
                 Text(
                     modifier = Modifier,
 //                        .padding(all = 48.dp),
-//                        .clickable { onItemClick(word) },     // TODO SHEET: makes text clickable
+//                        .clickable { onItemClick(word) },     //TODO SHEET: makes text clickable
                     text = word,
                 )
 
@@ -135,28 +151,50 @@ fun MyList(words: List<String>, onItemClick: (String) -> Unit) {
                     modifier = Modifier.weight(1f)
                 )
 
-                Row( // !!!!!!!! "put these 2 btns in a col together" !!!!!!!!
+                Row( //TODO SHEET: !!!!!!!! "put these 2 btns in a row together" !!!!!!!!
                     horizontalArrangement = Arrangement.End
                 ) {
                     IconButton(
-                        onClick = {},
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = Grey
-                        ),
-                    ) {
-                        Icon(Icons.Filled.KeyboardArrowUp, null)
-                    }
-
-                    IconButton(
-                        onClick = {},
+                        onClick = {
+                            moveText(words, index, "down")
+                        },
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = Grey
                         ),
                     ) {
                         Icon(Icons.Filled.KeyboardArrowDown, null)
                     }
+
+                    IconButton(
+                        onClick = {
+                            moveText(words, index, "up")
+                        },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = Grey
+                        ),
+                    ) {
+                        Icon(Icons.Filled.KeyboardArrowUp, null)
+                    }
                 }
             }
         }
+    }
+}
+
+fun moveText(textFields: MutableList<String>, index: Int, direction: String) {
+    // must be mutable list so that we can reorganise the texts in the list
+    //TODO: check this code
+    if (direction == "up" && index > 0) { // don't do functionality for the end button
+        Log.d("FOO", "$index up")
+        val temp = textFields[index]
+        Log.d("FOO", temp)
+        textFields[index] = textFields[index - 1]
+        textFields[index - 1] = temp
+    } else if (direction == "down" && index < textFields.size - 1) {
+        Log.d("FOO", "$index down")
+        val temp = textFields[index]
+        Log.d("FOO", temp)
+        textFields[index] = textFields[index + 1]
+        textFields[index + 1] = temp
     }
 }
