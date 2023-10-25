@@ -1,6 +1,7 @@
 package nz.ac.uclive.dsi61.examappexample
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -28,10 +29,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-fun getSharedPref(sharedPreferences: SharedPreferences, preferenceKey: String): String {
-    return (sharedPreferences.getString(preferenceKey, "<default value>") ?: "<default value>")
+fun getSharedPref(context: Context, preferenceKey: String): String {
+    //TODO SHEET: initialise sharedPrefs only ONE way, using same string each time: here, "MyPrefs"
+    // re-initialise it in this fn so we dont have to re-init in each file/screen
+    val sharedPrefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    return (sharedPrefs.getString(preferenceKey, "<default value>") ?: "<default value>")
 }
 
-fun setSharedPref(sharedPreferences: SharedPreferences, preferenceKey: String, newValue: String) {
-    sharedPreferences.edit().putString(preferenceKey, newValue).apply()
+fun setSharedPref(context: Context, preferenceKey: String, newValue: String) {
+    val sharedPrefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    sharedPrefs.edit().putString(preferenceKey, newValue).apply()
 }

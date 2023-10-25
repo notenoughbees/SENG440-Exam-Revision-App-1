@@ -30,20 +30,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import nz.ac.uclive.dsi61.examappexample.screens.Screens
 import nz.ac.uclive.dsi61.examappexample.ui.theme.Green
-import nz.ac.uclive.dsi61.examappexample.ui.theme.OffWhite
+import nz.ac.uclive.dsi61.examappexample.ui.theme.LightGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SetupScreen(context: Context, navController: NavController) {
-
-    val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-
     // variables to hold the content of the textfields
-    var fromText by rememberSaveable { mutableStateOf(getSharedPref(sharedPreferences, "from")) }
-    var toText by rememberSaveable { mutableStateOf(getSharedPref(sharedPreferences, "to")) }
-    var itemsText by rememberSaveable { mutableStateOf(getSharedPref(sharedPreferences, "items")) }
+    var fromText by rememberSaveable { mutableStateOf(getSharedPref(context, "from")) }
+    var toText by rememberSaveable { mutableStateOf(getSharedPref(context, "to")) }
+    var itemsText by rememberSaveable { mutableStateOf(getSharedPref(context, "items")) }
 
-    Scaffold(
+    Scaffold( //TODO SHEET: is red until do @OptIn & @Suppress
         topBar = {
             TopAppBar(
                 title = { Text(text = "Sort of Game") },
@@ -70,9 +67,9 @@ fun SetupScreen(context: Context, navController: NavController) {
                                 toText = ""
                                 itemsText = ""
                                 // clear the shared preferences
-                                setSharedPref(sharedPreferences, "from", "")
-                                setSharedPref(sharedPreferences, "to", "")
-                                setSharedPref(sharedPreferences, "items", "")
+                                setSharedPref(context, "from", "")
+                                setSharedPref(context, "to", "")
+                                setSharedPref(context, "items", "")
                             }
                         ) {
                             Text(text = "CLEAR")
@@ -109,7 +106,7 @@ fun SetupScreen(context: Context, navController: NavController) {
                         placeholder = { Text(text = placeholderText) },
                         value = selectedValue, // (if selVal was mutState, would do .value)
                         onValueChange = onValueChange, // use the given lambda function
-                        colors = TextFieldDefaults.textFieldColors(containerColor = OffWhite)
+                        colors = TextFieldDefaults.textFieldColors(containerColor = LightGreen)
                     ) //TODO SHEET: no {} here
                 }
 
@@ -118,15 +115,15 @@ fun SetupScreen(context: Context, navController: NavController) {
                     // would get error on the assignment line below bc TextField expects
                     // fromText to be var but it gets declared as val.
                     fromText = newValue
-                    setSharedPref(sharedPreferences, "from", newValue)
+                    setSharedPref(context, "from", newValue)
                 }
                 MyTextField("To", toText, Modifier.align(Alignment.End)) { newValue ->
                     toText = newValue
-                    setSharedPref(sharedPreferences, "to", newValue)
+                    setSharedPref(context, "to", newValue)
                 }
                 MyTextField("", itemsText, Modifier.fillMaxSize()) { newValue ->
                     itemsText = newValue
-                    setSharedPref(sharedPreferences, "items", newValue)
+                    setSharedPref(context, "items", newValue)
                 } // multiline textbox gets diff modifier
             }
         }
