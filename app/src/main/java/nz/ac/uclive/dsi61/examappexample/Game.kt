@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +44,29 @@ import nz.ac.uclive.dsi61.examappexample.ui.theme.VeryLightGrey
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameScreen(context: Context, navController: NavController) {
-    //TODO: add topappbar & make a fn for it
+    var isCorrectOrderDialogOpen = remember { mutableStateOf(false) }
+    var isWrongOrderDialogOpen = remember { mutableStateOf(false) }
+
+
+    val items = getSharedPref(context, "items")
+//        Log.d("FOO", items)
+    val splitItems = items.split("\n") // THE ORIGINAL LIST ORDER: THE TARGET LIST
+//        Log.d("FOO", splitItems.toString())
+
+//        val mutableSplitItems = splitItems.toMutableList()
+//        val rememberedMutableSplitItems = remember { // my attempt: doesnt work bc no fancy gpt syntax
+//            mutableStateListOf(splitItems) }
+
+    //TODO: FIX BUG: ITEMS LIST SHUFFLES AGAIN ON SECOND TIME ROTATING THE SCREEN (remembersaveable needed?)
+    val splitItemsShuffled = splitItems.shuffled()
+
+    // TODO SHEET: !!!!!!!!!!!! How to update UI after click the btns and set the values?
+    //  Must make MyList composable get recomposed when data changes.
+    //  To do this, use remember fn & mutableStateListOf():
+    //  remember the items so that when they change, we recompose & update the UI!
+    val rememberedMutableSplitItems = remember {
+        mutableStateListOf(*splitItemsShuffled.toTypedArray()) } //TODO SHEET: understand what this syntax does: * & toTypedArray()
+
     Scaffold(
         topBar = {
             MyTopAppBar()
@@ -59,35 +83,61 @@ fun GameScreen(context: Context, navController: NavController) {
                     ) {
                         Button(
                             onClick = {
-                                navController.navigate(Screens.Setup.route) //TODO
+                                Log.d("LIST1", splitItems.toString())
+                                Log.d("LIST2", rememberedMutableSplitItems.toList().toString())
+                                if(rememberedMutableSplitItems.toList() == splitItems) { // convert to list so we compare 2 lists!
+                                    isCorrectOrderDialogOpen.value = true
+                                } else {
+                                    isWrongOrderDialogOpen.value = true
+                                }
                             }
                         ) {
                             Text(text = "CHECK")
+                        }
+
+                        if(isCorrectOrderDialogOpen.value) {
+                            AlertDialog(
+                                onDismissRequest = { // when press phone back btn or click off the dialog
+                                    isCorrectOrderDialogOpen.value = false
+                                },
+                                title = {},
+                                text = { Text(text = "You sorted these correctly. Nice work!") },
+                                confirmButton = {
+                                    Button(
+                                        onClick = {
+                                            isCorrectOrderDialogOpen.value = false
+                                            navController.navigate(Screens.Setup.route)
+                                        }
+                                    ) {
+                                        Text(text = "OKAY")
+                                    }
+                                }
+                            )
+                        }
+
+                        if(isWrongOrderDialogOpen.value) {
+                            AlertDialog(
+                                onDismissRequest = { // when press phone back btn or click off the dialog
+                                    isWrongOrderDialogOpen.value = false
+                                },
+                                title = {},
+                                text = { Text(text = "Uh oh. That's not the correct order.") },
+                                confirmButton = {
+                                    Button(
+                                        onClick = {
+                                            isWrongOrderDialogOpen.value = false
+                                        }
+                                    ) {
+                                        Text(text = "RETRY")
+                                    }
+                                }
+                            )
                         }
                     }
                 }
             )
         }
     ) { innerPadding -> // will use later so we can push content below the topappbar & above the bottomappbar...
-        val items = getSharedPref(context, "items")
-//        Log.d("FOO", items)
-        val splitItems = items.split("\n")
-//        Log.d("FOO", splitItems.toString())
-
-//        val mutableSplitItems = splitItems.toMutableList()
-//        val rememberedMutableSplitItems = remember { // my attempt: doesnt work bc no fancy gpt syntax
-//            mutableStateListOf(splitItems) }
-
-        // TODO SHEET: !!!!!!!!!!!! How to update UI after click the btns and set the values?
-        //  Must make MyList composable get recomposed when data changes.
-        //  To do this, use remember fn & mutableStateListOf():
-        //  remember the items so that when they change, we recompose & update the UI!
-        val rememberedMutableSplitItems = remember {
-            val splitItemsShuffled = splitItems.shuffled() // randomise the order on initialisation only (don't randomise multiple times)
-            mutableStateListOf(*splitItemsShuffled.toTypedArray()) } //TODO SHEET: understand what this syntax does: * & toTypedArray()
-
-
-
         Box( // wrap our lazycolumn & box inside another box so can put padding around everything...
             modifier = Modifier
                 .padding(innerPadding) //TODO SHEET: push this content below & above the top & bottom app bars!!!!!!
