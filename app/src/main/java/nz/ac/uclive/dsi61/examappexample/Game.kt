@@ -58,7 +58,7 @@ fun GameScreen(context: Context, navController: NavController) {
     // this block from priscilla c:
     var splitItemsShuffled = mutableListOf<String>("")
     var isShuffled = false
-    while (!isShuffled) { // TODO SHEET: this prevents items shuffling every time we rotate screen!!!!
+    while (!isShuffled) { // TODO: this prevents items shuffling every time we rotate screen!!!!
         splitItemsShuffled = (splitItems.shuffled() as MutableList<String>?)!!
         if (splitItems != splitItemsShuffled) {
             isShuffled = true
@@ -140,7 +140,7 @@ fun GameScreen(context: Context, navController: NavController) {
     ) { innerPadding -> // will use later so we can push content below the topappbar & above the bottomappbar...
         Box( // wrap our lazycolumn & box inside another box so can put padding around everything...
             modifier = Modifier
-                .padding(innerPadding) //TODO SHEET: push this content below & above the top & bottom app bars!!!!!!
+                .padding(innerPadding) //TODO: push this content below & above the top & bottom app bars!!!!!!
         ) {
             MyList(rememberedMutableSplitItems, {})
 
@@ -181,14 +181,14 @@ fun MyList(words: MutableList<String>, onItemClick: (String) -> Unit) {
                 modifier = Modifier.background(VeryLightGrey)
             ) {
                 Text(
-//                    modifier = Modifier.clickable { onItemClick(word) },  //TODO SHEET: makes text clickable
+//                    modifier = Modifier.clickable { onItemClick(word) },  //TODO: makes text clickable
                     text = word,
                 )
 
                 // push btns to right side of screen
                 Spacer(modifier = Modifier.weight(1f))
 
-                Row( //TODO SHEET: !!!!!!!! "put these 2 btns in a row together" !!!!!!!!
+                Row( //TODO: !!!!!!!! "put these 2 btns in a row together" !!!!!!!!
                     horizontalArrangement = Arrangement.End
                 ) {
                     IconButton(
@@ -220,7 +220,6 @@ fun MyList(words: MutableList<String>, onItemClick: (String) -> Unit) {
 
 fun moveText(textFields: MutableList<String>, index: Int, direction: String) {
     // must be mutable list so that we can reorganise the texts in the list
-    //TODO: check this code
     if (direction == "up" && index > 0) { // don't do functionality for the end button
         Log.d("FOO", "$index up")
         val temp = textFields[index]

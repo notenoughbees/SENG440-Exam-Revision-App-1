@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExamAppExampleTheme(content = {
                 Scaffold {
-                    val navController = rememberNavController()
+                    val navController = rememberNavController() //TODO: use OUR NavGraph, NOT androidx NavGraph!!!! "import nz.ac.uclive.dsi61.examappexample.navigation.NavGraph"
                     NavGraph(navController = navController)
                 }
             })
@@ -47,7 +47,7 @@ fun MyTopAppBar() {
 }
 
 fun getSharedPref(context: Context, preferenceKey: String): String {
-    //TODO SHEET: initialise sharedPrefs only ONE way, using same string each time: here, "MyPrefs"
+    //TODO: initialise sharedPrefs only ONE way, using same string each time: here, "MyPrefs"
     // re-initialise it in this fn so we dont have to re-init in each file/screen
     val sharedPrefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     return (sharedPrefs.getString(preferenceKey, "<default value>") ?: "<default value>")

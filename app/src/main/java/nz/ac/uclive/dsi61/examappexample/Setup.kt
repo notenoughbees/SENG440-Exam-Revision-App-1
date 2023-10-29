@@ -37,7 +37,7 @@ fun SetupScreen(context: Context, navController: NavController) {
     var toText by rememberSaveable { mutableStateOf(getSharedPref(context, "to")) }
     var itemsText by rememberSaveable { mutableStateOf(getSharedPref(context, "items")) }
 
-    Scaffold( //TODO SHEET: is red until do @OptIn & @Suppress
+    Scaffold( //TODO: is red until do @OptIn & @Suppress
         topBar = {
             MyTopAppBar()
         },
@@ -47,8 +47,7 @@ fun SetupScreen(context: Context, navController: NavController) {
                 contentPadding = PaddingValues(16.dp), // make btns align w/ the components in the scaffold's main content
                 content = {
                     Row( // must be in row in order to use horizontal arrangement
-                        Modifier
-                            .fillMaxWidth(),
+                        Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween // push btns to edges
                     ) {
                         Button(
@@ -78,7 +77,7 @@ fun SetupScreen(context: Context, navController: NavController) {
             )
         }
     ) { innerPadding ->
-        Box( //TODO SHEET: IF IN DOUBT, WRAP EVERYTHING IN A BOX
+        Box( //TODO: IF IN DOUBT, WRAP EVERYTHING IN A BOX
             modifier = Modifier.fillMaxSize().padding(16.dp) // put padding around entire content: outer
         ) {
             Column(
@@ -93,12 +92,12 @@ fun SetupScreen(context: Context, navController: NavController) {
 
                     TextField(
                         modifier = modifier,
-                        label = { Text(text = label) }, //TODO SHEET: remember {}s if put a composable
+                        label = { Text(text = label) }, //TODO: remember {}s if put a composable
                         placeholder = { Text(text = placeholderText) },
                         value = selectedValue, // (if selVal was mutState, would do .value)
                         onValueChange = onValueChange, // use the given lambda function
                         colors = TextFieldDefaults.textFieldColors(containerColor = LightGreen)
-                    ) //TODO SHEET: no {} here
+                    ) //TODO: no {} here
                 }
 
                 MyTextField("From", fromText, Modifier.align(Alignment.End)) { newValue ->
