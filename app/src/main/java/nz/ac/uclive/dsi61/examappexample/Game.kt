@@ -28,9 +28,10 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,23 +50,24 @@ fun GameScreen(context: Context, navController: NavController) {
 
 
     val items = getSharedPref(context, "items")
-//        Log.d("FOO", items)
     val splitItems = items.split("\n") // THE ORIGINAL LIST ORDER: THE TARGET LIST
-//        Log.d("FOO", splitItems.toString())
+//    val splitItemsShuffled = splitItems.shuffled()
+//    val rememberedMutableSplitItems = remember {
+//        mutableStateListOf(*splitItemsShuffled.toTypedArray()) }
 
-//        val mutableSplitItems = splitItems.toMutableList()
-//        val rememberedMutableSplitItems = remember { // my attempt: doesnt work bc no fancy gpt syntax
-//            mutableStateListOf(splitItems) }
+    // this block from priscilla c:
+    var splitItemsShuffled = mutableListOf<String>("")
+    var isShuffled = false
+    while (!isShuffled) { // TODO SHEET: this prevents items shuffling every time we rotate screen!!!!
+        splitItemsShuffled = (splitItems.shuffled() as MutableList<String>?)!!
+        if (splitItems != splitItemsShuffled) {
+            isShuffled = true
+        } }
 
-    //TODO: FIX BUG: ITEMS LIST SHUFFLES AGAIN ON SECOND TIME ROTATING THE SCREEN (remembersaveable needed?)
-    val splitItemsShuffled = splitItems.shuffled()
-
-    // TODO SHEET: !!!!!!!!!!!! How to update UI after click the btns and set the values?
     //  Must make MyList composable get recomposed when data changes.
-    //  To do this, use remember fn & mutableStateListOf():
+    //  To do this, use remember fn & mutableStateOf():
     //  remember the items so that when they change, we recompose & update the UI!
-    val rememberedMutableSplitItems = remember {
-        mutableStateListOf(*splitItemsShuffled.toTypedArray()) } //TODO SHEET: understand what this syntax does: * & toTypedArray()
+    val rememberedMutableSplitItems by rememberSaveable { mutableStateOf(splitItemsShuffled) } // (don't need mutableState[List]Of(splitItemsShuffled) bc splitItemsShuffled is defined as mutable already)
 
     Scaffold(
         topBar = {
@@ -77,8 +79,7 @@ fun GameScreen(context: Context, navController: NavController) {
                 contentPadding = PaddingValues(16.dp), // make btns align w/ the components in the scaffold's main content
                 content = {
                     Row( // must be in row in order to use horizontal arrangement
-                        Modifier
-                            .fillMaxWidth(),
+                        Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End // push btn to right edge
                     ) {
                         Button(
@@ -114,7 +115,6 @@ fun GameScreen(context: Context, navController: NavController) {
                                 }
                             )
                         }
-
                         if(isWrongOrderDialogOpen.value) {
                             AlertDialog(
                                 onDismissRequest = { // when press phone back btn or click off the dialog
@@ -147,29 +147,22 @@ fun GameScreen(context: Context, navController: NavController) {
 
             // separate box for the From & To text, which is aligned to the top & bottom
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text(
-                        text = getSharedPref(context, "from")
-                    )
+                    Text(text = getSharedPref(context, "from"))
                 }
 
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = getSharedPref(context, "to")
-                    )
+                    Text(text = getSharedPref(context, "to"))
                 }
             }
         }
@@ -184,21 +177,16 @@ fun MyList(words: MutableList<String>, onItemClick: (String) -> Unit) {
             .padding(16.dp) // ...then do 16dp around the content as well (but not for the top&bottom text)
     ) { // Only renders the visible elements passed to the items function.
         itemsIndexed(words) { index, word -> // items() or itemsIndexed() if need index
-            // Styling for an individual item in the list
             Row(
-                modifier = Modifier
-                .background(VeryLightGrey)
+                modifier = Modifier.background(VeryLightGrey)
             ) {
                 Text(
-                    modifier = Modifier,
-//                        .padding(all = 48.dp),
-//                        .clickable { onItemClick(word) },     //TODO SHEET: makes text clickable
+//                    modifier = Modifier.clickable { onItemClick(word) },  //TODO SHEET: makes text clickable
                     text = word,
                 )
 
-                Spacer( // push btns to right side of screen
-                    modifier = Modifier.weight(1f)
-                )
+                // push btns to right side of screen
+                Spacer(modifier = Modifier.weight(1f))
 
                 Row( //TODO SHEET: !!!!!!!! "put these 2 btns in a row together" !!!!!!!!
                     horizontalArrangement = Arrangement.End

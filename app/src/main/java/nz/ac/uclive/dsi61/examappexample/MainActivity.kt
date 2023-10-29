@@ -34,8 +34,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTopAppBar() {
@@ -47,8 +45,6 @@ fun MyTopAppBar() {
         )
     )
 }
-
-
 
 fun getSharedPref(context: Context, preferenceKey: String): String {
     //TODO SHEET: initialise sharedPrefs only ONE way, using same string each time: here, "MyPrefs"
